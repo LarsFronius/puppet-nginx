@@ -14,7 +14,7 @@ define nginx::install_site($content=undef) {
         group   => 'root',
         alias   => "sites-${name}",
         notify  => Service['nginx'],
-        require => Package['nginx'],
+        require => Package['nginx-package'],
       }
     }
     default: {
@@ -25,7 +25,7 @@ define nginx::install_site($content=undef) {
         group   => 'root',
         alias   => "sites-$name",
         content => $content,
-        require => Package['nginx'],
+        require => Package['nginx-package'],
         notify  => Service['nginx'],
       }
     }

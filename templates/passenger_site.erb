@@ -7,6 +7,12 @@ server {
 
     root <%= root %>;
 
+    passenger_enabled on;
+    rails_env <%= real_rails_env %>;
+<% real_rails_env.each do |r_e| -%>
+    passenger_base_uri <%= r_e %>;
+<% end -%>
+
 <% if listen == '443' %>
     ssl  on;
     ssl_certificate  <%= real_ssl_certificate %>;
@@ -18,16 +24,6 @@ server {
     ssl_ciphers  ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
     ssl_prefer_server_ciphers   on;
 <% end -%>
-    location / {
-        index   <%= index %>;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass <%= fastcgi_pass %>;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include /etc/nginx/includes/fastcgi_params.inc;
-    }
 
     location ~ /\.ht {
         deny  all;
@@ -36,3 +32,4 @@ server {
 <% if include  != '' %>    <%include.each do |inc| %>include <%= inc %>;
     <% end -%><% end -%>
 }
+

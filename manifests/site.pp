@@ -19,7 +19,7 @@ define nginx::site($ensure='present', $content='') {
         onlyif  => "/bin/sh -c '[ -L /etc/nginx/sites-enabled/${name} ] && \
           [ /etc/nginx/sites-enabled/$name -ef /etc/nginx/sites-available/${name} ]'",
         notify  => Service['nginx'],
-        require => Package['nginx'],
+        require => Package['nginx-package'],
       }
     }
     default: { err ("Unknown ensure value: '$ensure'") }

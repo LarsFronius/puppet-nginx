@@ -24,7 +24,7 @@ class nginx {
   $nginx_conf = '/etc/nginx/conf.d'
 
   $nginxversion = $nginxversion ? {
-    undef => '1.0.0',
+    undef   => '1.0.0',
     default => $nginxversion
   }
 
@@ -43,9 +43,13 @@ class nginx {
     default => $::nginx_worker_connections
   }
 
-  if ! defined(Package['nginx']) { package { 'nginx': ensure => installed }}
+  package { 'nginx-package':
+    ensure  => installed,
+    name   => 'nginx',
+  }
 
-  #restart-command is a quick-fix here, until http://projects.puppetlabs.com/issues/1014 is solved
+  #restart-command is a quick-fix here
+  #until http://projects.puppetlabs.com/issues/1014 is solved
   service { 'nginx':
     ensure     => running,
     enable     => true,
@@ -61,7 +65,7 @@ class nginx {
     group   => 'root',
     content => template('nginx/nginx.conf.erb'),
     notify  => Service['nginx'],
-    require => Package['nginx'],
+    require => Package['nginx-package'],
   }
 
   file { $nginx_conf:
@@ -69,7 +73,7 @@ class nginx {
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
-    require => Package['nginx'],
+    require => Package['nginx-package'],
   }
 
   file { '/etc/nginx/ssl':
@@ -77,7 +81,7 @@ class nginx {
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
-    require => Package['nginx'],
+    require => Package['nginx-package'],
   }
 
   file { $nginx_includes:
@@ -85,12 +89,12 @@ class nginx {
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
-    require => Package['nginx'],
+    require => Package['nginx-package'],
   }
 
   # Nuke default files
   file { '/etc/nginx/fastcgi_params':
     ensure  => absent,
-    require => Package['nginx'],
+    require => Package['nginx-package'],
   }
 }
