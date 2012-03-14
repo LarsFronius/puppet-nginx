@@ -1,3 +1,8 @@
+# Class: nginx::passenger
+#
+# Manage nginx passenger configuration.
+# Provide nginx::passenger::site
+#
 class nginx::passenger inherits nginx {
     Package['nginx-package'] {
         name    => 'nginx-extras',

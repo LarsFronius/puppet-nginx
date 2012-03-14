@@ -1,7 +1,6 @@
 # Define: nginx::passenger::site
 #
-# Create a fcgi site config from template using parameters.
-# You can use my php5-fpm class to manage fastcgi servers.
+# Create a passenger site config from template using parameters.
 #
 # Parameters :
 # * ensure: typically set to "present" or "absent". Defaults to "present"
@@ -21,14 +20,16 @@
 #
 # Sample Usage :
 #   nginx::passenger::site { 'default':
-#     root         => '/var/www/nginx-default',
+#     root         => '/var/www/app/public',
 #     server_name  => ['localhost', $hostname, $fqdn],
 #   }
 #
 #   nginx::passenger::site { 'default-ssl':
-#     listen          => '443',
-#     root            => '/var/www/nginx-default',
-#     server_name     => $fqdn,
+#     listen             => '443',
+#     root               => '/var/www/app/public',
+#     server_name        => $fqdn,
+#     passenger_base_uri => '/app',
+#     rails_env          => 'production'
 #   }
 #
 define nginx::passenger::site(

@@ -10,7 +10,7 @@ server {
     passenger_enabled on;
     rails_env <%= real_rails_env %>;
 <% real_rails_env.each do |r_e| -%>
-    passenger_base_uri <%= r_e %>;
+    passenger_base_uri <%= r_e -%>;
 <% end -%>
 
 <% if listen == '443' %>

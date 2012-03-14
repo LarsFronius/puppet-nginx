@@ -10,7 +10,7 @@ Based in part on apache2 module code by Sam Quigley <sq@wesabe.com>, Tim Stoop <
 ## Class: nginx ##
 
 Parameters (used in nginx.conf.erb) :
-       * $nginx_user. Defaults to 'www-data'. 
+       * $nginx_user. Defaults to 'www-data'.
        * $nginx_worker_processes. Defaults to '1'.
        * $nginx_worker_connections. Defaults to '1024'.
 
@@ -22,19 +22,20 @@ Create config directories :
 	* /etc/nginx/sites-available
 	* /etc/nginx/ssl
 
-Provide 4 definitions : 
+Provide 4 definitions :
 	* nginx::config (http config snippet)
 	* nginx::site (http site)
 	* nginx::site_include (site includes)
 	* nginx::fcgi::site (fcgi php site)
+    * nginx::passenger::site (passenger site)
 
 Templates:
 	- nginx.conf.erb => /etc/nginx/nginx.conf
 
 
-### Define nginx::config ### 
+### Define: nginx::config ###
 
-Installs a config snippet in /etc/nginx/conf.d. 
+Installs a config snippet in /etc/nginx/conf.d.
 
 Parameters :
 	* ensure: typically set to "present" or "absent". Defaults to "present"
@@ -44,7 +45,7 @@ Parameters :
 
 ###  Define: nginx::site ###
 
-Install a nginx site in /etc/nginx/sites-available (and symlink in /etc/nginx/sites-enabled). 
+Install a nginx site in /etc/nginx/sites-available (and symlink in /etc/nginx/sites-enabled).
 
 Parameters :
 	* ensure: typically set to "present" or "absent". Defaults to "present"
@@ -61,10 +62,10 @@ Parameters :
 	* content: include definition (should be a template).
 
 
-## Class nginx::fcgi ##
+## Class: nginx::fcgi ##
 
 Manage nginx fcgi configuration.
-Provide nginx::fcgi::site 
+Provide nginx::fcgi::site
 
 Templates :
 	* nginx/includes/fastcgi_params.erb
@@ -85,7 +86,7 @@ Parameters :
 	* include : custom include for the site (could be an array). Include files must exists
 	   to avoid nginx reload errors. Use with nginx::site_include
 	* ssl_certificate : ssl_certificate path. If empty auto-generating ssl cert
-	* ssl_certificate_key : ssl_certificate_key path. If empty auto-generating ssl cert key 
+	* ssl_certificate_key : ssl_certificate_key path. If empty auto-generating ssl cert key
    See http://wiki.nginx.org for details.
 
 Templates :
@@ -109,5 +110,45 @@ Sample Usage :
                 server_name     => "$fqdn",
          }
 
+## Class nginx::passenger ##
+
+Manage nginx passenger configuration.
+Provide nginx::passenger::site
+
+### Define: nginx::passenger::site  ###
+
+     Create a passenger site config from template using parameters.
+
+     Parameters :
+     * ensure: typically set to "present" or "absent". Defaults to "present"
+     * root: document root (Required)
+     * fastcgi_pass : port or socket on which the FastCGI-server is listening (Required)
+     * server_name : server_name directive (could be an array)
+     * listen : address/port the server listen to. Defaults to 80. Auto enable ssl if 443
+     * access_log : custom acces logs. Defaults to /var/log/nginx/$name_access.log
+     * include : custom include for the site (could be an array). Include files must exists
+       to avoid nginx reload errors. Use with nginx::site_include
+     * ssl_certificate : ssl_certificate path. If empty auto-generating ssl cert
+     * ssl_certificate_key : ssl_certificate_key path. If empty auto-generating ssl cert key
+       See http://wiki.nginx.org for details.
+
+     Templates :
+     * nginx/passenger_site.erb
+
+     Sample Usage :
+       nginx::passenger::site { 'default':
+         root         => '/var/www/app/public',
+         server_name  => ['localhost', $hostname, $fqdn],
+       }
+
+       nginx::passenger::site { 'default-ssl':
+         listen             => '443',
+         root               => '/var/www/app/public',
+         server_name        => $fqdn,
+         passenger_base_uri => '/app',
+         rails_env          => 'production'
+       }
+
 ## CHANGELOG ##
+- v0.3 : * passenger support
 - v0.2 : * ssl support
